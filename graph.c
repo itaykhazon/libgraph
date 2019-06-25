@@ -1,6 +1,13 @@
 #include <malloc.h>
 #include "graph.h"
 
+/**
+ * @brief   Checks if s is connected to d, if so, return the connecting edge in e.
+ * @param   s   The source vertex.
+ * @param   d   The destination vertex.
+ * @param   e   The connecting edge (optional).
+ * @return  true if there is an edge (s,d), false otherwise.
+ */
 bool graph_is_connected(struct graph_vertex *s, struct graph_vertex *d, struct graph_edge **e) {
     bool res = false;
     struct graph_edge *curr_edge = NULL;
@@ -62,6 +69,7 @@ graph_res_t GRAPH_init(bool is_directional, struct graph **g) {
     return res;
 }
 
+/** @see graph.h */
 graph_res_t GRAPH_destroy(struct graph *g) {
     graph_res_t res = GRAPH_ERR_UNDEFINED;
     struct graph_vertex *v = NULL;
