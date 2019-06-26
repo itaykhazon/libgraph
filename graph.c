@@ -1,4 +1,5 @@
 #include <malloc.h>
+#include <stdio.h>
 #include "graph.h"
 
 /**
@@ -312,6 +313,131 @@ graph_res_t GRAPH_remove_edge(struct graph *g, uint64_t s_id, uint64_t d_id) {
 
     /* Indicate success. */
     res = GRAPH_ERR_SUCCESS;
+
+    cleanup:
+    return res;
+}
+
+/** @see graph.h */
+graph_res_t GRAPH_get_adjecency_matrix(struct graph *g, double ***adj_matrix, size_t *size) {
+    graph_res_t res = GRAPH_ERR_UNDEFINED;
+    struct graph_vertex  *v = NULL;
+    struct graph_vertex  *v2 = NULL;
+    struct graph_edge *e = NULL;
+    double **local_matrix = NULL;
+    double *matrix_data = NULL;
+    size_t i = 0;
+    size_t j = 0;
+
+    /* Parameter check. */
+    if ((NULL == g) || (NULL == adj_matrix) || (NULL == size)) {
+        res = GRAPH_ERR_PARAMS;
+        goto cleanup;
+    }
+
+    /* Allocate the rows array. */
+    local_matrix = malloc(sizeof(*local_matrix) * g->vertex_count);
+    if (NULL == local_matrix) {
+        res = GRAPH_ERR_MEM;
+        goto cleanup;
+    }
+
+    /* Allocate a buffer for the matrix itself. */
+    matrix_data = malloc(sizeof(*matrix_data) * g->vertex_count * g->vertex_count);
+    if (NULL == matrix_data) {
+        res = GRAPH_ERR_MEM;
+        goto cleanup;
+    }
+
+    /* Fix the rows in the rows array. */
+    for (i = 0; i < g->vertex_count; ++i) {
+        local_matrix[i] = (matrix_data + (i * g->vertex_count));
+    }
+
+    for (i = 0; i < g->vertex_count; ++i) {
+        for (j = 0; j < g->vertex_count; ++j) {
+            local_matrix[i][j] = -1;
+        }
+    }
+
+    /* Go over all the vertices and fill the matrix. */
+    i = 0;
+    j = 0;
+    LIST_FOREACH(v, &g->vertices, next) {
+        LIST_FOREACH(e, &v->neighbors, next) {
+            /* Find the index of d_id */
+            LIST_FOREACH(v2, &g->vertices, next) {
+                if (e->d_id == v2->id) {
+                    matrix_data[i * g->vertex_count + j] = e->weight;
+                }
+                j++;
+            }
+            j = 0;
+            i++;
+        }
+    }
+
+    /* Transfer ownership and indicate success. */
+    *adj_matrix = local_matrix;
+    *size = g->vertex_count;
+    local_matrix = NULL;
+    matrix_data = NULL;
+
+    res = GRAPH_ERR_SUCCESS;
+
+    cleanup:
+    if (NULL != local_matrix) {
+        free(local_matrix);
+    }
+    if (NULL != matrix_data) {
+        free(matrix_data);
+    }
+
+    return res;
+}
+
+/** @see graph.h */
+graph_res_t GRAPH_free_adjecency_matrix(struct graph *g, double **adj_matrix) {
+    graph_res_t res = GRAPH_ERR_UNDEFINED;
+
+    /* Parameter check. */
+    if ((NULL == g) || (NULL == adj_matrix)) {
+        res = GRAPH_ERR_PARAMS;
+        goto cleanup;
+    }
+
+    if (NULL != adj_matrix[0]) {
+        free(adj_matrix[0]);
+    }
+    free(adj_matrix);
+
+    /* Indicate success. */
+    res = GRAPH_ERR_SUCCESS;
+
+    cleanup:
+    return res;
+}
+
+/** @see graph.h */
+graph_res_t GRAPH_print(struct graph *g) {
+    graph_res_t res = GRAPH_ERR_UNDEFINED;
+    struct graph_vertex  *v = NULL;
+    struct graph_edge *e = NULL;
+
+    /* Parameter check. */
+    if (NULL == g) {
+        res = GRAPH_ERR_PARAMS;
+        goto cleanup;
+    }
+
+    /* Go over all the vertices and print their edges. */
+    LIST_FOREACH(v, &g->vertices, next) {
+        (void)printf("%llu: ", v->id);
+        LIST_FOREACH(e, &v->neighbors, next) {
+            (void)printf("(%llu->%llu (%f)) ", e->s_id, e->d_id, e->weight);
+        }
+        (void)printf("\n");
+    }
 
     cleanup:
     return res;

@@ -121,4 +121,34 @@ graph_res_t GRAPH_add_edge(struct graph *g, uint64_t s_id, uint64_t d_id, double
  */
 graph_res_t GRAPH_remove_edge(struct graph *g, uint64_t s_id, uint64_t d_id);
 
+/**
+ * @brief   Returns an adjecency matrix of the graph.
+ *          The order of the vertices is the order of the internal graph list.
+ *          if e=(u,v) is an edge in the graph, adj[u][v] = w(e), otherwise, adj[u][v]=-1.
+ * @param g             The graph.
+ * @param adj_matrix    The returned adjencency matrix.
+ * @param size          The size of the col/row of the matrix.
+ * @return  GRAPH_ERR_SUCCESS on success.
+ *
+ * @note    GRAPH_free_adjecency_matrix should be called on the matrix to free it.
+ */
+graph_res_t GRAPH_get_adjecency_matrix(struct graph *g, double ***adj_matrix, size_t *size);
+
+/**
+ * @brief   Frees the memory of the adjecency matrix.
+ * @param g             The graph.
+ * @param adj_matrix    The adjecency matrix.
+ * @return  GRAPH_ERR_SUCCESS on success.
+ *
+ * @note    adj_matrix is a dangling pointer after the call to this function.
+ */
+graph_res_t GRAPH_free_adjecency_matrix(struct graph *g, double **adj_matrix);
+
+/**
+ * @brief   Prints a representation of the graph.
+ * @param   g       The graph
+ * @return  GRAPH_ERR_SUCCESS on success.
+ */
+graph_res_t GRAPH_print(struct graph *g);
+
 #endif

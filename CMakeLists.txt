@@ -5,7 +5,7 @@ set(CMAKE_C_STANDARD 99)
 
 INCLUDE_DIRECTORIES(contrib/*)
 
-set(SOURCE_FILES graph.c graph.h errors.h)
+set(SOURCE_FILES graph.c graph.h errors.h graph_utils.c graph_utils.h)
 add_library(libgraph.a ${SOURCE_FILES})
 
 ENABLE_TESTING()
