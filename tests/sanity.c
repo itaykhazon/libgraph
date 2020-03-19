@@ -216,16 +216,18 @@ bool test_graph_add_edge_happy_flow() {
 }
 
 int main() {
-    ASSERT_TRUE(test_graph_init_happy_flow());
-    ASSERT_TRUE(test_graph_init_bad_params());
+    SUITE_INIT(Sanity)
+        ASSERT_TEST(test_graph_init_happy_flow);
+        ASSERT_TEST(test_graph_init_bad_params);
 
-    ASSERT_TRUE(test_graph_add_vertex_happy_flow());
-    ASSERT_TRUE(test_graph_add_vertex_already_exists());
-    ASSERT_TRUE(test_graph_add_vertex_multiple());
+        ASSERT_TEST(test_graph_add_vertex_happy_flow);
+        ASSERT_TEST(test_graph_add_vertex_already_exists);
+        ASSERT_TEST(test_graph_add_vertex_multiple);
 
-    ASSERT_TRUE(test_graph_add_edge_happy_flow());
-    ASSERT_TRUE(test_graph_add_edge_multiple());
+        ASSERT_TEST(test_graph_add_edge_happy_flow);
+        ASSERT_TEST(test_graph_add_edge_multiple);
 
-    ASSERT_TRUE(test_graph_get_adj_matrix());
+        ASSERT_TEST(test_graph_get_adj_matrix);
+    SUITE_END(Sanity)
 }
 
